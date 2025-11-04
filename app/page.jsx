@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Card } from 'components/card';
 import { FeedbackForm } from 'components/feedback-form';
 
@@ -23,6 +24,20 @@ export default function Page() {
                 </Card>
                 <Card title="간편한 사용성" className="sm:col-span-2">
                     <p>큰 버튼과 음성 피드백으로 누구나 쉽게 사용할 수 있습니다.</p>
+                </Card>
+            </section>
+
+            <section className="grid gap-4 sm:grid-cols-2">
+                <Card title="예상 데모 화면" className="sm:col-span-2">
+                    <div className="relative w-full aspect-[16/9] overflow-hidden rounded-sm">
+                        <Image
+                            src="/images/aeye-demo.png"
+                            alt="A-EYE 예상 데모 화면"
+                            fill
+                            priority
+                            className="object-cover"
+                        />
+                    </div>
                 </Card>
             </section>
 
