@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactCompiler: true,
+  // Disable React Compiler to avoid requiring babel-plugin-react-compiler locally
+  reactCompiler: false,
   
   redirects() {
     return [
