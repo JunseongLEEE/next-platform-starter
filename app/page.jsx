@@ -1,63 +1,34 @@
 import Link from 'next/link';
 import { Card } from 'components/card';
-import { ContextAlert } from 'components/context-alert';
-import { Markdown } from 'components/markdown';
-import { RandomQuote } from 'components/random-quote';
-import { getNetlifyContext } from 'utils';
-
-const contextExplainer = `
-The card below is rendered on the server based on the value of \`process.env.CONTEXT\` 
-([docs](https://docs.netlify.com/configure-builds/environment-variables/#build-metadata)):
-`;
-
-const preDynamicContentExplainer = `
-The card content below is fetched by the client-side from \`/quotes/random\` (see file \`app/quotes/random/route.js\`) with a different quote shown on each page load:
-`;
-
-const ctx = getNetlifyContext();
+import { FeedbackForm } from 'components/feedback-form';
 
 export default function Page() {
     return (
         <div className="flex flex-col gap-12 sm:gap-16">
             <section>
-                <ContextAlert className="mb-6" />
-                <h1 className="mb-4">Netlify Platform Starter – Next.js</h1>
+                <h1 className="mb-4">A-EYE – 시각 보조 서비스</h1>
                 <p className="mb-6 text-lg">
-                    Deploy the latest version of Next.js — including Turbopack, React Compiler, and the new caching APIs
-                    — on Netlify in seconds. No configuration or custom adapter required.
+                    A-EYE는 주변 환경을 인식하고 안전한 이동을 돕는 차세대 시각 보조 서비스입니다.
+                    현재는 프리뷰 단계로, 정식 출시 소식을 가장 먼저 받아보세요.
                 </p>
-                <Link href="https://docs.netlify.com/frameworks/next-js/overview/" className="btn btn-lg sm:min-w-64">
-                    Read the Docs
-                </Link>
+                <Link href="/#signup" className="btn btn-lg sm:min-w-64">사전 신청</Link>
             </section>
-            {!!ctx && (
-                <section className="flex flex-col gap-4">
-                    <Markdown content={contextExplainer} />
-                    <RuntimeContextCard />
-                </section>
-            )}
-            <section className="flex flex-col gap-4">
-                <Markdown content={preDynamicContentExplainer} />
-                <RandomQuote />
+
+            <section id="features" className="grid gap-4 sm:grid-cols-2">
+                <Card title="주변 상황 인식">
+                    <p>실시간으로 주변 사물을 파악하고 위험 요소를 알려줍니다.</p>
+                </Card>
+                <Card title="안전한 길안내">
+                    <p>보행에 최적화된 흐름으로 목적지까지 안내합니다.</p>
+                </Card>
+                <Card title="간편한 사용성" className="sm:col-span-2">
+                    <p>큰 버튼과 음성 피드백으로 누구나 쉽게 사용할 수 있습니다.</p>
+                </Card>
+            </section>
+
+            <section id="signup" className="scroll-mt-24">
+                <FeedbackForm />
             </section>
         </div>
     );
-}
-
-function RuntimeContextCard() {
-    const title = `Netlify Context: running in ${ctx} mode.`;
-    if (ctx === 'dev') {
-        return (
-            <Card title={title}>
-                <p>Next.js will rebuild any page you navigate to, including static pages.</p>
-            </Card>
-        );
-    } else {
-        const now = new Date().toISOString();
-        return (
-            <Card title={title}>
-                <p>This page was statically-generated at build time ({now}).</p>
-            </Card>
-        );
-    }
 }

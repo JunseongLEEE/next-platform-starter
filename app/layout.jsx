@@ -4,14 +4,14 @@ import { Header } from '../components/header';
 
 export const metadata = {
     title: {
-        template: '%s | Netlify',
-        default: 'Netlify Starter'
+        template: '%s | A-EYE',
+        default: 'A-EYE 시각 보조 서비스'
     }
 };
 
 export default function RootLayout({ children }) {
     return (
-        <html lang="en">
+        <html lang="ko">
             <head>
                 <link rel="icon" href="/favicon.svg" sizes="any" />
             </head>

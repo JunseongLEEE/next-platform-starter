@@ -4,14 +4,9 @@ import netlifyLogo from 'public/netlify-logo.svg';
 import githubLogo from 'public/images/github-mark-white.svg';
 
 const navItems = [
-    { linkText: 'Home', href: '/' },
-    { linkText: 'Revalidation', href: '/revalidation' },
-    { linkText: 'Image CDN', href: '/image-cdn' },
-    { linkText: 'Edge Function', href: '/edge' },
-    { linkText: 'Blobs', href: '/blobs' },
-    { linkText: 'Classics', href: '/classics' },
-    { linkText: 'Middleware', href: '/middleware' },
-    { linkText: 'Routing', href: '/routing' }
+    { linkText: '홈', href: '/' },
+    { linkText: '기능', href: '/#features' },
+    { linkText: '사전 신청', href: '/#signup' }
 ];
 
 export function Header() {
@@ -31,13 +26,8 @@ export function Header() {
                     ))}
                 </ul>
             )}
-            <Link
-                href="https://github.com/netlify-templates/next-platform-starter"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ml-auto"
-            >
-                <Image src={githubLogo} alt="GitHub logo" className="w-7" />
+            <Link href="/#signup" className="ml-auto btn">
+                사전 신청
             </Link>
         </nav>
     );
