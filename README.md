@@ -12,7 +12,7 @@ Implicit usage means you're using any Next.js functionality and everything "just
 
 Click the button below to deploy this template to your Netlify account.
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/netlify-templates/next-platform-starter)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/JunseongLEEE/next-platform-starter)
 
 ## Developing Locally
 
