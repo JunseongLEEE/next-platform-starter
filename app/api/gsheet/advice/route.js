@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export async function POST(request) {
     try {
         const body = await request.json();
-        const { id, email, advice } = body || {};
+        const { id, email, advice, owner, scenario } = body || {};
 
         if (!id || !email || typeof advice === 'undefined') {
             return NextResponse.json({ ok: false, error: 'Missing required fields' }, { status: 400 });
@@ -12,6 +12,8 @@ export async function POST(request) {
         const scriptUrl = process.env.APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbyRZatqlCOsahNjMxiRYmsGLQ-FFnicAKpuSuyAUSh383Eyb_t55W-SPuhNaslGZ4qL/exec';
 
         const payload = { id, email, advice };
+        if (owner !== undefined) payload.owner = owner;
+        if (scenario !== undefined) payload.scenario = scenario;
         const url = `${scriptUrl}?action=insert&table=advice&data=${encodeURIComponent(JSON.stringify(payload))}`;
         const upstream = await fetch(url, { method: 'GET', cache: 'no-store' });
 

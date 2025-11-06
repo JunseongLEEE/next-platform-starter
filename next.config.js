@@ -38,6 +38,11 @@ const nextConfig = {
         source: '/blog',
         destination: '/classics',
       },
+      // Serve StartBootstrap Agency dist via file-serving route
+      {
+        source: '/',
+        destination: '/agency/index.html',
+      },
     ];
   },
 };
