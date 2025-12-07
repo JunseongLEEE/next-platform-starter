@@ -6,7 +6,8 @@ import githubLogo from 'public/images/github-mark-white.svg';
 const navItems = [
     { linkText: '홈', href: '/' },
     { linkText: '기능', href: '/#features' },
-    { linkText: '사전 신청', href: '/#signup' }
+    { linkText: '사전 신청', href: '/#signup' },
+    { linkText: 'A‑EYE', href: '/aeye' }
 ];
 
 export function Header() {
