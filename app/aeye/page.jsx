@@ -1,34 +1,39 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+
+export const dynamic = 'force-dynamic';
 
 export default function Page() {
-  const params = useSearchParams();
-  const paramSrc = params?.get('src')?.trim() || '';
   const envSrc = process.env.NEXT_PUBLIC_AEYE_UI_ORIGIN || '';
   // 개발 편의 기본값(즉시 동작 요청에 따라 하드코드)
   const DEV_FALLBACK_SRC = 'https://nonsparing-balustered-juanita.ngrok-free.dev';
 
-  // 초기 렌더에서도 바로 보이도록: param > env > fallback 순으로 즉시 결정
-  const initialSrc = useMemo(() => paramSrc || envSrc || DEV_FALLBACK_SRC, [paramSrc, envSrc]);
+  // 초기에는 ENV 또는 Fallback으로 설정 (SSR 안전)
+  const initialSrc = useMemo(() => envSrc || DEV_FALLBACK_SRC, [envSrc]);
   const [resolvedSrc, setResolvedSrc] = useState(initialSrc);
 
   useEffect(() => {
-    // 쿼리/ENV가 없으면 localStorage → 개발 기본값 순으로 채움
-    if (!resolvedSrc) {
-      try {
-        const last = localStorage.getItem('aeye_src') || '';
-        if (last) {
-          setResolvedSrc(last);
-          return;
-        }
-      } catch {}
-      if (DEV_FALLBACK_SRC) {
-        setResolvedSrc(DEV_FALLBACK_SRC);
+    // 클라이언트에서만 쿼리 파라미터 읽기
+    try {
+      const usp = new URLSearchParams(window.location.search);
+      const param = usp.get('src')?.trim() || '';
+      if (param) {
+        setResolvedSrc(param);
+        try { localStorage.setItem('aeye_src', param); } catch {}
+        return;
       }
+    } catch {}
+    // 쿼리가 없으면 최근 값 복구
+    try {
+      const last = localStorage.getItem('aeye_src') || '';
+      if (last) setResolvedSrc(last);
+    } catch {}
+    // 최종적으로 ENV 또는 Fallback 유지
+    if (!envSrc && DEV_FALLBACK_SRC && !resolvedSrc) {
+      setResolvedSrc(DEV_FALLBACK_SRC);
     }
-  }, [resolvedSrc]);
+  }, [envSrc, resolvedSrc]);
 
   const missing = !resolvedSrc;
   return (
