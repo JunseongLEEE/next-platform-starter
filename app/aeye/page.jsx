@@ -7,13 +7,60 @@ export const dynamic = 'force-dynamic';
 export default function Page() {
   const envSrc = process.env.NEXT_PUBLIC_AEYE_UI_ORIGIN || '';
   // 개발 편의 기본값(즉시 동작 요청에 따라 하드코드)
-  const DEV_FALLBACK_SRC = 'https://nonsparing-balustered-juanita.ngrok-free.dev';
+  const DEV_FALLBACK_SRC = 'https://messages-top-appliances-example.trycloudflare.com/';
 
   // 초기에는 ENV 또는 Fallback으로 설정 (SSR 안전)
   const initialSrc = useMemo(() => envSrc || DEV_FALLBACK_SRC, [envSrc]);
   const [resolvedSrc, setResolvedSrc] = useState(initialSrc);
 
   useEffect(() => {
+    // helper: id
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+    function setCookie(name, value, days) {
+      let expires = '';
+      if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+        expires = `; expires=${date.toUTCString()}`;
+      }
+      document.cookie = `${name}=${value || ''}${expires}; path=/`;
+    }
+    function getOrCreateUserId() {
+      const existing = getCookie('user');
+      if (existing) return existing;
+      const id = Math.random().toString(36).substring(2, 8).toUpperCase();
+      setCookie('user', id, 180);
+      return id;
+    }
+    const userId = getOrCreateUserId();
+    const device =
+      typeof navigator !== 'undefined' &&
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+        ? 'mobile'
+        : 'desktop';
+    const ts = new Date().toISOString().replace('T', ' ').slice(0, 19);
+    async function logUsage(event, extra = {}) {
+      try {
+        await fetch('/api/gsheet/usage', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: userId,
+            event,
+            timestamp: ts,
+            device,
+            page: '/aeye',
+            src: resolvedSrc || '',
+            ...extra,
+          }),
+        });
+      } catch {}
+    }
+
     // 클라이언트에서만 쿼리 파라미터 읽기
     try {
       const usp = new URLSearchParams(window.location.search);
@@ -21,18 +68,40 @@ export default function Page() {
       if (param) {
         setResolvedSrc(param);
         try { localStorage.setItem('aeye_src', param); } catch {}
+        logUsage('aeye_src_param', { value: param });
         return;
       }
     } catch {}
     // 쿼리가 없으면 최근 값 복구
     try {
       const last = localStorage.getItem('aeye_src') || '';
-      if (last) setResolvedSrc(last);
+      if (last) {
+        setResolvedSrc(last);
+        logUsage('aeye_src_localstorage', { value: last });
+      }
     } catch {}
     // 최종적으로 ENV 또는 Fallback 유지
     if (!envSrc && DEV_FALLBACK_SRC && !resolvedSrc) {
       setResolvedSrc(DEV_FALLBACK_SRC);
     }
+    // 최초 진입 로그
+    logUsage('aeye_page_view');
+
+    // postMessage 이벤트 수신(임베드 앱이 이벤트를 보낼 경우)
+    function onMessage(ev) {
+      try {
+        const origin = new URL(resolvedSrc || DEV_FALLBACK_SRC).origin;
+        if (ev.origin !== origin) return;
+      } catch {
+        return;
+      }
+      const data = ev.data || {};
+      if (data && data.type === 'aeye_event') {
+        logUsage('aeye_event', data.payload || {});
+      }
+    }
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
   }, [envSrc, resolvedSrc]);
 
   const missing = !resolvedSrc;
@@ -46,6 +115,15 @@ export default function Page() {
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-sm hover:bg-white/15"
+            onClick={() => {
+              try {
+                fetch('/api/gsheet/usage', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ event: 'aeye_open_new_tab', url: resolvedSrc }),
+                });
+              } catch {}
+            }}
           >
             새 창에서 열기
           </a>

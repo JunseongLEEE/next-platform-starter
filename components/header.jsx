@@ -7,7 +7,7 @@ const navItems = [
     { linkText: '홈', href: '/' },
     { linkText: '기능', href: '/#features' },
     { linkText: '사전 신청', href: '/#signup' },
-    { linkText: 'A‑EYE', href: '/aeye?src=https%3A%2F%2Fnonsparing-balustered-juanita.ngrok-free.dev' }
+    { linkText: 'A‑EYE', href: '/aeye?src=https%3A%2F%2Fmessages-top-appliances-example.trycloudflare.com%2F' }
 ];
 
 export function Header() {
